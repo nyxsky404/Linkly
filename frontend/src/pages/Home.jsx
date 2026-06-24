@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import axios from 'axios'
 import './Home.css'
+import { CheckIcon, CopyIcon, DownloadIcon } from '../components/Icons'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
@@ -10,6 +11,7 @@ function Home({ navigateTo }) {
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [copied, setCopied] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -36,23 +38,30 @@ function Home({ navigateTo }) {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   return (
     <div className="home-page">
       <div className="hero-section">
-        <h1 className="hero-title">Your Connections Platform</h1>
-        <p className="hero-subtitle">Shorten, customize, and track your links</p>
+        <span className="hero-eyebrow">The all-in-one link platform</span>
+        <h1 className="hero-title">
+          Build stronger digital connections
+        </h1>
+        <p className="hero-subtitle">
+          Shorten long links, generate QR codes, and track every click — all in one place.
+        </p>
       </div>
 
       <div className="create-section">
         <div className="create-card">
-          <h2 className="card-title">Quick create</h2>
-          <p className="card-subtitle">You can create links and track their performance</p>
+          <h2 className="card-title">Shorten a long link</h2>
+          <p className="card-subtitle">Paste a URL below and get a short, trackable link in seconds.</p>
 
           <form onSubmit={handleSubmit} className="create-form">
             <div className="form-group">
-              <label className="form-label">Enter your destination URL</label>
+              <label className="form-label">Destination URL</label>
               <input
                 type="url"
                 className="form-input"
@@ -65,21 +74,24 @@ function Home({ navigateTo }) {
 
             <div className="form-group">
               <label className="form-label">
-                Custom alias (optional)
-                <span className="label-hint">3-20 characters, letters, numbers, hyphens, underscores</span>
+                Custom back-half <span className="label-optional">(optional)</span>
               </label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="my-custom-link"
-                value={customAlias}
-                onChange={(e) => setCustomAlias(e.target.value)}
-                pattern="[a-zA-Z0-9_-]{3,20}"
-              />
+              <div className="alias-field">
+                <span className="alias-prefix">linkly.to/</span>
+                <input
+                  type="text"
+                  className="form-input alias-input"
+                  placeholder="my-custom-link"
+                  value={customAlias}
+                  onChange={(e) => setCustomAlias(e.target.value)}
+                  pattern="[a-zA-Z0-9_-]{3,20}"
+                />
+              </div>
+              <span className="label-hint">3–20 characters · letters, numbers, hyphens, underscores</span>
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Creating...' : 'Create short link'}
+              {loading ? 'Creating…' : 'Create your link'}
             </button>
           </form>
 
@@ -92,37 +104,41 @@ function Home({ navigateTo }) {
           {result && (
             <div className="result-section">
               <div className="success-message">
-                <span className="success-icon">🎉</span>
-                <span className="success-text">Your link is ready!</span>
+                <span className="success-icon"><CheckIcon width={16} height={16} /></span>
+                <span className="success-text">Your link is ready</span>
               </div>
 
               <div className="result-card">
                 <div className="result-url">
-                  <span className="url-label">Short URL:</span>
+                  <span className="url-label">Short link</span>
                   <a href={result.shorter_url} target="_blank" rel="noopener noreferrer" className="short-url">
                     {result.shorter_url}
                   </a>
                 </div>
                 <button className="btn-copy" onClick={() => copyToClipboard(result.shorter_url)}>
-                  Copy link
+                  {copied ? <CheckIcon width={16} height={16} /> : <CopyIcon width={16} height={16} />}
+                  {copied ? 'Copied' : 'Copy'}
                 </button>
               </div>
 
               <div className="qr-section">
-                <h3 className="qr-title">QR Codes available:</h3>
                 <div className="qr-preview">
                   <img src={result.qr_code.png} alt="QR Code" className="qr-image" />
                 </div>
-                <div className="qr-downloads">
-                  <a href={`${result.qr_code.png}&download=true`} className="btn-download" download>
-                    Download PNG
-                  </a>
-                  <a href={`${result.qr_code.jpeg}&download=true`} className="btn-download" download>
-                    Download JPEG
-                  </a>
-                  <a href={`${result.qr_code.svg}&download=true`} className="btn-download" download>
-                    Download SVG
-                  </a>
+                <div className="qr-meta">
+                  <h3 className="qr-title">Scan or download the QR code</h3>
+                  <p className="qr-sub">Perfect for print, packaging, or sharing offline.</p>
+                  <div className="qr-downloads">
+                    <a href={`${result.qr_code.png}&download=true`} className="btn-download" download>
+                      <DownloadIcon width={15} height={15} /> PNG
+                    </a>
+                    <a href={`${result.qr_code.jpeg}&download=true`} className="btn-download" download>
+                      <DownloadIcon width={15} height={15} /> JPEG
+                    </a>
+                    <a href={`${result.qr_code.svg}&download=true`} className="btn-download" download>
+                      <DownloadIcon width={15} height={15} /> SVG
+                    </a>
+                  </div>
                 </div>
               </div>
 

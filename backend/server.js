@@ -24,17 +24,27 @@ function parseUserAgent(userAgentString) {
     return {
         browser: result.browser.name || 'Unknown',
         os: result.os.name || 'Unknown',
-        device_type: result.device.type || 'Unknown'
+        // ua-parser-js leaves device.type undefined for desktop/laptop browsers,
+        // so treat the absence of a type as Desktop instead of Unknown.
+        device_type: result.device.type || 'Desktop'
     };
+}
+
+function getClientIp(req) {
+    // Behind a proxy (Render/Vercel) x-forwarded-for is a comma-separated
+    // chain "client, proxy1, proxy2" — the real client IP is the first entry.
+    const xff = req.headers['x-forwarded-for'];
+    const raw = (xff ? xff.split(',')[0] : req.socket.remoteAddress || req.ip || '').trim();
+    return raw.replace('::ffff:', '');
 }
 
 function getGeoData(ip) {
     const cleanIp = ip.replace('::ffff:', '');
-    
+
     if (cleanIp === '127.0.0.1' || cleanIp === '::1') {
         return { country: 'Local', city: 'Localhost' };
     }
-    
+
     const geo = geoip.lookup(cleanIp);
     return {
         country: geo?.country || 'Unknown',
@@ -87,7 +97,9 @@ app.get('/analytics/:key', async (req, res) => {
     }, {});
 
     const clicksByDevice = urlData.clicks.reduce((acc, click) => {
-        acc[click.device_type] = (acc[click.device_type] || 0) + 1;
+        const os = click.os && click.os !== 'Unknown' ? click.os : null;
+        const label = os ? `${click.device_type} · ${os}` : click.device_type;
+        acc[label] = (acc[label] || 0) + 1;
         return acc;
     }, {});
 
@@ -267,7 +279,7 @@ app.get('/:key', async (req, res) => {
         return res.status(404).json({ message: 'URL not found' });
     }
 
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || req.ip;
+    const ip = getClientIp(req);
     const userAgent = req.headers['user-agent'] || '';
     const referrer = req.headers['referer'] || req.headers['referrer'] || 'Direct';
     

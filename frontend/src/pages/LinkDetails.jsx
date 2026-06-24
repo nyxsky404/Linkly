@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import './LinkDetails.css'
+import { ArrowLeftIcon, CopyIcon, CheckIcon, DownloadIcon } from '../components/Icons'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 function LinkDetails({ link, navigateTo }) {
   const [analytics, setAnalytics] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     if (link) {
@@ -27,6 +29,8 @@ function LinkDetails({ link, navigateTo }) {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   if (!link) {
@@ -34,18 +38,18 @@ function LinkDetails({ link, navigateTo }) {
   }
 
   if (loading) {
-    return <div className="loading">Loading analytics...</div>
+    return <div className="loading">Loading analytics…</div>
   }
 
   return (
     <div className="details-page">
       <button className="btn-back" onClick={() => navigateTo('links')}>
-        ← Back to list
+        <ArrowLeftIcon width={16} height={16} /> Back to links
       </button>
 
       <div className="details-header">
-        <div>
-          <h1 className="details-title">Link Analytics</h1>
+        <div className="details-head-info">
+          <span className="details-eyebrow">Link analytics</span>
           <a
             href={analytics.shorter_url}
             target="_blank"
@@ -60,14 +64,15 @@ function LinkDetails({ link, navigateTo }) {
             rel="noopener noreferrer"
             className="details-original"
           >
-            ↳ {analytics.org_url}
+            {analytics.org_url}
           </a>
         </div>
         <button
           className="btn-copy-lg"
           onClick={() => copyToClipboard(analytics.shorter_url)}
         >
-          Copy link
+          {copied ? <CheckIcon width={16} height={16} /> : <CopyIcon width={16} height={16} />}
+          {copied ? 'Copied' : 'Copy link'}
         </button>
       </div>
 
@@ -148,7 +153,7 @@ function LinkDetails({ link, navigateTo }) {
                 .slice(0, 5)
                 .map(([referrer, count]) => (
                   <div key={referrer} className="data-item">
-                    <span className="data-label">{referrer.substring(0, 40)}...</span>
+                    <span className="data-label">{referrer.length > 40 ? `${referrer.substring(0, 40)}…` : referrer}</span>
                     <span className="data-value">{count}</span>
                   </div>
                 ))
@@ -179,21 +184,21 @@ function LinkDetails({ link, navigateTo }) {
                 className="btn-qr"
                 download
               >
-                Download PNG
+                <DownloadIcon width={16} height={16} /> Download PNG
               </a>
               <a
                 href={`${API_URL}/qr/${link.url_id}?format=jpeg&download=true`}
                 className="btn-qr"
                 download
               >
-                Download JPEG
+                <DownloadIcon width={16} height={16} /> Download JPEG
               </a>
               <a
                 href={`${API_URL}/qr/${link.url_id}?format=svg&download=true`}
                 className="btn-qr"
                 download
               >
-                Download SVG
+                <DownloadIcon width={16} height={16} /> Download SVG
               </a>
             </div>
           </div>

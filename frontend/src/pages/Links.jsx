@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import './Links.css'
+import { LinkIcon, CopyIcon, ChartIcon, TrashIcon, PlusIcon, SearchIcon } from '../components/Icons'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
@@ -46,23 +47,27 @@ function Links({ navigateTo }) {
   )
 
   if (loading) {
-    return <div className="loading">Loading links...</div>
+    return <div className="loading">Loading links…</div>
   }
 
   return (
     <div className="links-page">
       <div className="links-header">
-        <h1 className="page-title">Your Links</h1>
+        <div>
+          <h1 className="page-title">My Links</h1>
+          <p className="page-subtitle">{links.length} {links.length === 1 ? 'link' : 'links'} created</p>
+        </div>
         <button className="btn-create" onClick={() => navigateTo('home')}>
-          + Create new
+          <PlusIcon width={17} height={17} /> Create new
         </button>
       </div>
 
       <div className="search-bar">
+        <SearchIcon className="search-icon" width={18} height={18} />
         <input
           type="text"
           className="search-input"
-          placeholder="Search links..."
+          placeholder="Search by short link or destination…"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -72,11 +77,11 @@ function Links({ navigateTo }) {
 
       {filteredLinks.length === 0 ? (
         <div className="empty-state">
-          <span className="empty-icon">🔗</span>
-          <h2>No links found</h2>
+          <span className="empty-icon"><LinkIcon width={32} height={32} /></span>
+          <h2>No links yet</h2>
           <p>Create your first short link to get started</p>
-          <button className="btn-primary" onClick={() => navigateTo('home')}>
-            Create link
+          <button className="btn-create" onClick={() => navigateTo('home')}>
+            <PlusIcon width={17} height={17} /> Create link
           </button>
         </div>
       ) : (
@@ -124,21 +129,21 @@ function Links({ navigateTo }) {
                   onClick={() => copyToClipboard(link.shorter_url)}
                   title="Copy link"
                 >
-                  📋 Copy
+                  <CopyIcon width={16} height={16} /> Copy
                 </button>
                 <button
                   className="btn-action"
                   onClick={() => navigateTo('details', link)}
                   title="View details"
                 >
-                  📊 Analytics
+                  <ChartIcon width={16} height={16} /> Analytics
                 </button>
                 <button
                   className="btn-action btn-danger"
                   onClick={() => deleteLink(link.url_id)}
                   title="Delete"
                 >
-                  🗑️ Delete
+                  <TrashIcon width={16} height={16} />
                 </button>
               </div>
             </div>

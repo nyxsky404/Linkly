@@ -3,6 +3,7 @@ import './App.css'
 import Home from './pages/Home'
 import Links from './pages/Links'
 import LinkDetails from './pages/LinkDetails'
+import { LinkIcon } from './components/Icons'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home')
@@ -17,22 +18,27 @@ function App() {
     <div className="app">
       <nav className="navbar">
         <div className="nav-container">
-          <div className="nav-brand">
-            <span className="logo">🔗</span>
-            <span className="brand-name">URL Shortener</span>
-          </div>
+          <button className="nav-brand" onClick={() => navigateTo('home')}>
+            <span className="logo">
+              <LinkIcon width={20} height={20} />
+            </span>
+            <span className="brand-name">Linkly</span>
+          </button>
           <div className="nav-links">
-            <button 
+            <button
               className={`nav-link ${currentPage === 'home' ? 'active' : ''}`}
               onClick={() => navigateTo('home')}
             >
               Home
             </button>
-            <button 
-              className={`nav-link ${currentPage === 'links' ? 'active' : ''}`}
+            <button
+              className={`nav-link ${currentPage === 'links' || currentPage === 'details' ? 'active' : ''}`}
               onClick={() => navigateTo('links')}
             >
-              Links
+              My Links
+            </button>
+            <button className="nav-cta" onClick={() => navigateTo('home')}>
+              Create link
             </button>
           </div>
         </div>
