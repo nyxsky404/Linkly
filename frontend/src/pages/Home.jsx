@@ -44,14 +44,19 @@ function Home({ navigateTo }) {
 
   return (
     <div className="home-page">
-      <div className="hero-section">
-        <span className="hero-eyebrow">The all-in-one link platform</span>
-        <h1 className="hero-title">
-          Build stronger digital connections
-        </h1>
-        <p className="hero-subtitle">
-          Shorten long links, generate QR codes, and track every click — all in one place.
-        </p>
+      <div className="hero-band">
+        <span className="hero-sparkle s1">✦</span>
+        <span className="hero-sparkle s2">✦</span>
+        <span className="hero-sparkle s3">✦</span>
+        <div className="hero-inner">
+          <span className="hero-eyebrow">The all-in-one link platform</span>
+          <h1 className="hero-title">
+            Build stronger digital connections
+          </h1>
+          <p className="hero-subtitle">
+            Shorten long links, generate QR codes, and track every click.
+          </p>
+        </div>
       </div>
 
       <div className="create-section">

@@ -1,5 +1,6 @@
 .app {
   min-height: 100vh;
+  overflow-x: clip;
 }
 
 .navbar {
